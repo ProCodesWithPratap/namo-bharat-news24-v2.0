@@ -1,7 +1,7 @@
 {
-  "name": "namo-bharat-news-starter",
+  "name": "namo-bharat-news24",
+  "version": "0.2.0",
   "private": true,
-  "version": "0.1.0",
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
@@ -23,11 +23,11 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "autoprefixer": "^10.4.20",
+    "autoprefixer": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.17",
+    "postcss": "latest",
+    "tailwindcss": "3.4.17",
     "typescript": "latest"
   }
 }

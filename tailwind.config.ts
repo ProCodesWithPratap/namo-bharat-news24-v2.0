@@ -1,23 +1,14 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
-    './src/app/**/*.{ts,tsx}',
-    './src/components/**/*.{ts,tsx}'
+    './src/**/*.{js,ts,jsx,tsx}',
+    './payload/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {
-      colors: {
-        brand: {
-          red: '#B31217',
-          gold: '#D4AF37',
-          ink: '#111827',
-          soft: '#F8F5F0'
-        }
-      }
-    }
+    extend: {},
   },
-  plugins: []
-}
+  plugins: [],
+};
 
-export default config
+export default config;

@@ -1,77 +1,45 @@
-import Link from 'next/link'
-import { StoryCard } from '@/components/StoryCard'
-import { SectionTitle } from '@/components/SectionTitle'
-import { featuredStory, latestStories, trendingTopics } from '@/lib/data'
-import { buildMetadata } from '@/lib/seo'
+import Link from 'next/link';
 
-export const metadata = buildMetadata('Namo Bharat News 24', 'Production-ready homepage for a modern news platform.', '/')
-
-export default function HomePage() {
+/**
+ * The home page displays the latest articles and breaking news.  In a
+ * full implementation this component would fetch content from the
+ * Payload CMS using `fetch` inside `getServerSideProps` or an
+ * API route.  Here we provide a placeholder layout and sample
+ * structure.
+ */
+const HomePage = async () => {
+  // TODO: Fetch the latest articles, categories and breaking news from
+  // Payload CMS.  Example (server‑side):
+  // const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/articles?limit=5`);
+  // const { docs: articles } = await res.json();
   return (
-    <div className="container-shell py-8">
-      <section className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-        <article className="card overflow-hidden">
-          <div className="h-72 bg-gradient-to-br from-brand-red to-black" />
-          <div className="p-6">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-brand-red">{featuredStory.category}</p>
-            <h1 className="mt-2 text-4xl font-black leading-tight tracking-tight text-brand-ink">
-              <Link href={`/article/${featuredStory.slug}`}>{featuredStory.headline}</Link>
-            </h1>
-            <p className="mt-4 max-w-3xl text-base text-black/70">{featuredStory.deck}</p>
-            <p className="mt-4 text-sm text-black/60">By {featuredStory.author} · {featuredStory.publishedAt}</p>
-          </div>
-        </article>
+    <section className="space-y-8">
+      {/* Breaking News Ticker */}
+      <div className="bg-yellow-200 py-2 px-4 font-semibold overflow-hidden whitespace-nowrap">
+        ब्रेकिंग न्यूज़: साइट निर्माण जारी है…
+      </div>
 
-        <aside className="space-y-4">
-          <div className="card p-5">
-            <SectionTitle title="Trending" kicker="Now" />
-            <div className="flex flex-wrap gap-2">
-              {trendingTopics.map((topic) => (
-                <span key={topic} className="rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold">
-                  #{topic}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="card p-5">
-            <SectionTitle title="Most Read" kicker="Audience" />
-            <div className="space-y-4">
-              {latestStories.slice(0, 4).map((story) => (
-                <div key={story.id} className="border-b border-black/10 pb-3 last:border-0 last:pb-0">
-                  <p className="text-xs font-bold uppercase tracking-wide text-brand-red">{story.category}</p>
-                  <Link href={`/article/${story.slug}`} className="mt-1 block font-semibold leading-snug">
-                    {story.headline}
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </aside>
-      </section>
+      {/* Latest Articles */}
+      <div>
+        <h2 className="text-xl font-bold mb-4">ताज़ा खबरें</h2>
+        <ul className="space-y-4">
+          {/* Sample static articles; replace with dynamic content */}
+          <li className="border-b pb-2">
+            <Link href="/article/sample-news-story" className="text-lg font-medium">
+              यह एक नमूना समाचार लेख है
+            </Link>
+            <p className="text-sm text-gray-600">एक उदाहरण परिचय…</p>
+          </li>
+          <li className="border-b pb-2">
+            <Link href="/article/second-story" className="text-lg font-medium">
+              दूसरा समाचार शीर्षक यहाँ
+            </Link>
+            <p className="text-sm text-gray-600">दूसरे लेख का परिचय…</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+  );
+};
 
-      <section className="mt-10">
-        <SectionTitle title="Latest News" kicker="Live Desk" />
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {latestStories.map((story) => (
-            <StoryCard key={story.id} headline={story.headline} category={story.category} time={story.time} slug={story.slug} />
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-10 grid gap-6 lg:grid-cols-3">
-        {['Politics', 'Business', 'Sports'].map((section) => (
-          <div key={section} className="card p-5">
-            <SectionTitle title={section} kicker="Section" />
-            <div className="space-y-3">
-              {latestStories.slice(0, 3).map((story) => (
-                <Link key={`${section}-${story.id}`} href={`/article/${story.slug}`} className="block rounded-xl border border-black/10 p-3 font-medium leading-snug hover:bg-brand-soft">
-                  {story.headline}
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-      </section>
-    </div>
-  )
-}
+export default HomePage;
