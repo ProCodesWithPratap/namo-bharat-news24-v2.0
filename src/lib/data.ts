@@ -1,3 +1,5 @@
+import { runtimeEnv } from '@/lib/env'
+
 export type Category = {
   id: string
   name: string
@@ -58,9 +60,10 @@ const mockArticles: Article[] = [
   makeMockArticle(6, mockCategories[1], mockAuthors[0])
 ]
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-
 type PayloadListResponse<T> = { docs: T[] }
+
+const baseUrl = runtimeEnv.siteUrl
+const shouldUseMockData = runtimeEnv.shouldUseMockData
 
 type PayloadArticle = {
   id: string
@@ -90,6 +93,10 @@ const withTimeout = async <T>(promise: Promise<T>, timeoutMs = 2500): Promise<T>
 }
 
 const safeFetch = async <T>(path: string): Promise<T | null> => {
+  if (shouldUseMockData) {
+    return null
+  }
+
   try {
     const res = await withTimeout(
       fetch(`${baseUrl}${path}`, {
@@ -130,9 +137,11 @@ export const getHomepageData = async () => {
   const payloadData = await safeFetch<PayloadListResponse<PayloadArticle>>('/api/articles?limit=8&sort=-publishedAt&depth=2')
   const articles = payloadData?.docs?.length ? payloadData.docs.map(toArticle) : mockArticles
 
+  const featured = articles[0] || mockArticles[0]
+
   return {
     breaking: 'ब्रेकिंग: हिंदी-फर्स्ट न्यूज़रूम अब Payload CMS के साथ लाइव डेटा के लिए तैयार है।',
-    featured: articles[0],
+    featured,
     latest: articles.slice(1, 7),
     categories: mockCategories
   }

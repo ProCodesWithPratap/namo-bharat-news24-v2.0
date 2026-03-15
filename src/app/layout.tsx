@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import '../styles/globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { runtimeEnv } from '@/lib/env'
 import { siteConfig } from '@/lib/site'
 
 export const metadata: Metadata = {
@@ -14,6 +15,16 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/'
   },
+  robots: runtimeEnv.isPreviewLike
+    ? {
+        index: false,
+        follow: false,
+        nocache: true
+      }
+    : {
+        index: true,
+        follow: true
+      },
   openGraph: {
     type: 'website',
     siteName: siteConfig.name,
