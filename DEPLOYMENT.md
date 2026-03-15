@@ -1,41 +1,51 @@
-# DEPLOYMENT (Browser-Only Preview + Production)
+# DEPLOYMENT (Vercel Preview + Real Payload/Postgres)
 
-## 1) Preview mode (no database required)
-Use this mode for Vercel-style cloud previews where you only need UI review.
+## 1) Preview mode (safe without database)
+Use this for browser-only review and UI validation.
 
 1. Push this branch to GitHub.
 2. Import the repo in Vercel.
 3. In **Project Settings → Environment Variables**, set:
-   - `NEWS_DATA_MODE=mock`
+   - `NEWS_DATA_MODE=mock` (or keep `auto` and do not set DB vars)
    - `NEXT_PUBLIC_SITE_URL=https://<your-preview-domain>`
-4. Do **not** set `DATABASE_URL` for preview mode.
-5. Trigger a deploy from the Vercel UI.
-6. Open the deployed preview in your browser and verify:
+4. Do **not** set `DATABASE_URL` in preview.
+5. Deploy and verify:
    - home page
    - article page
    - category page
    - author page
    - search page
+   - `/admin` shows setup guidance page (expected in no-DB mode)
 
-Notes:
-- In preview/no-DB mode, the app uses built-in mock news data.
-- Preview responses are marked no-index (`robots` disallow + metadata robots noindex).
+## 2) Production mode (real Payload + PostgreSQL)
 
-## 2) Production mode (real Payload + Postgres)
-Use this mode when real CMS data is required.
+### A. Provision Postgres
+- Create a PostgreSQL database (Neon/Supabase/RDS/etc.)
+- Copy a connection string in this format:
+  - `postgres://USER:PASSWORD@HOST:5432/DBNAME?sslmode=require`
 
-1. Provision Postgres and copy the connection string.
-2. In Vercel production env vars, set:
-   - `DATABASE_URL=<postgres-connection-string>`
-   - `PAYLOAD_SECRET=<strong-random-secret>`
-   - `NEWS_DATA_MODE=payload` (or keep `auto`)
-   - `NEXT_PUBLIC_SITE_URL=https://<production-domain>`
-3. Deploy to production.
-4. Validate Payload/admin/data wiring separately before launch.
+### B. Set environment variables
+In Vercel **Production** env vars set:
+- `DATABASE_URL=<postgres-connection-string>`
+- `PAYLOAD_SECRET=<strong-random-secret>`
+- `NEXT_PUBLIC_SITE_URL=https://<production-domain>`
+- `NEWS_DATA_MODE=auto` (recommended)
 
-## 3) Mode rules
-- `NEWS_DATA_MODE=auto` (default):
-  - uses Payload only when `DATABASE_URL` is present
-  - otherwise uses mock fallback
-- `NEWS_DATA_MODE=mock`: force mock data always
-- `NEWS_DATA_MODE=payload`: force Payload/API fetch mode
+### C. Deploy
+- Trigger a production deploy.
+- Visit `/admin`.
+- Create first admin user if prompted.
+
+### D. Verify real data mode
+- Add at least one category, author, and article in admin.
+- Confirm homepage/article/category/author/search pages render your CMS content.
+
+## 3) Admin/auth endpoints
+- Admin UI: `/admin`
+- Payload REST/auth: `/api/payload/*`
+  - Example login endpoint: `/api/payload/users/login`
+
+## 4) Fallback/safety rules
+- If `DATABASE_URL` is missing, app content uses mock data.
+- Preview builds remain deploy-safe with no database.
+- Admin route remains available but shows a setup message until DB credentials are configured.

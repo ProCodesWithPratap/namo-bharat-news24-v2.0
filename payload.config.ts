@@ -9,6 +9,7 @@ import media from './payload/collections/media.ts'
 import breakingNews from './payload/collections/breakingNews.ts'
 
 const serverURL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const databaseUrl = process.env.DATABASE_URL
 
 const users = {
   slug: 'users',
@@ -18,7 +19,10 @@ const users = {
     defaultColumns: ['email', 'role']
   },
   access: {
-    read: ({ req }: { req: { user?: unknown } }) => Boolean(req.user)
+    read: ({ req }: { req: { user?: { role?: string } } }) => Boolean(req.user),
+    create: () => true,
+    update: ({ req }: { req: { user?: { role?: string } } }) => req.user?.role === 'admin',
+    delete: ({ req }: { req: { user?: { role?: string } } }) => req.user?.role === 'admin'
   },
   fields: [
     {
@@ -46,11 +50,14 @@ export default buildConfig({
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL || ''
+      connectionString: databaseUrl || 'postgres://invalid:invalid@localhost:5432/payload_not_configured'
     }
   }),
   admin: {
-    user: users.slug
+    user: users.slug,
+    meta: {
+      titleSuffix: ' • Namo Bharat News 24 CMS'
+    }
   },
   collections: [users as any, media, categories, authors, articles, breakingNews],
   plugins: [
