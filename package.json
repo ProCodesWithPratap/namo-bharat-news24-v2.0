@@ -11,7 +11,8 @@
     "payload:types": "payload generate:types",
     "payload:migrate": "node ./node_modules/payload/dist/bin/index.js migrate",
     "payload:migrate:status": "node ./node_modules/payload/dist/bin/index.js migrate:status",
-    "db:bootstrap": "node scripts/bootstrap-db.mjs"
+    "db:bootstrap": "node scripts/bootstrap-db.mjs",
+    "db:diagnose:auth": "node scripts/diagnose-auth-schema.mjs"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "latest",

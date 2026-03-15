@@ -14,4 +14,10 @@ For fresh environments, run:
 DATABASE_URL=<postgres-url> PAYLOAD_SECRET=<secret> npm run db:bootstrap
 ```
 
-That command performs a one-time schema push and verifies auth tables (`users`, `users_sessions`).
+That command performs a one-time schema push, verifies auth tables (`users`, `users_sessions`), and validates essential auth/session columns.
+
+For explicit diagnostics:
+
+```bash
+DATABASE_URL=<postgres-url> npm run db:diagnose:auth
+```
