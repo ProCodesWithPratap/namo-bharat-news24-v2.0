@@ -42,11 +42,16 @@ This is a production-oriented starter for a news website built with Next.js App 
 
 ## First admin user setup
 After setting `DATABASE_URL` and `PAYLOAD_SECRET`:
-1. Run the app locally or deploy with those env vars.
-2. Visit `/admin`.
-3. Payload will prompt to create the first user if none exists.
-4. Create your first admin account (use role `admin`).
-5. Log in and start creating categories, authors, and articles.
+1. Run one-time schema bootstrap (required before first admin login):
+   - `DATABASE_URL=<postgres-url> PAYLOAD_SECRET=<secret> npm run db:bootstrap`
+2. Deploy (or run locally) with the same env vars.
+3. Visit `/admin`.
+4. Payload will prompt to create the first user if none exists.
+5. Create your first admin account (use role `admin`).
+6. Log in and start creating categories, authors, and articles.
+
+### Why this is required
+If DB connection works but `/admin/login` fails while querying `users` and `users_sessions`, the auth schema was not initialized yet. The bootstrap step initializes/verifies these tables up front instead of waiting for runtime failures.
 
 ## What still needs your credentials
 You still need to provide these real values in your environment:
@@ -61,3 +66,8 @@ Without those credentials, the app remains in safe mock mode and `/admin` will s
 - Add editorial workflows and publish states
 - Add search indexing backend
 - Add analytics keys and alerting
+
+## Migration/bootstrap commands
+- `npm run db:bootstrap` → one-time schema init + auth table verification (`users`, `users_sessions`)
+- `npm run payload:migrate` → run committed migrations (for migration-first workflow)
+- `npm run payload:migrate:status` → inspect migration status
