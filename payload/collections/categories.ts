@@ -1,37 +1,31 @@
-import { CollectionConfig } from 'payload/types';
+import type { CollectionConfig } from 'payload'
 
-/**
- * Categories represent the high‑level topics for your news content.
- * Each category has a name, a URL‑friendly slug and an optional
- * description.  Categories can be used to group articles on the
- * homepage and to generate archive pages.
- */
 const Categories: CollectionConfig = {
   slug: 'categories',
   access: {
-    read: () => true,
+    read: () => true
   },
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'slug'],
+    defaultColumns: ['name', 'slug']
   },
   fields: [
     {
       name: 'name',
       type: 'text',
-      required: true,
+      required: true
     },
     {
       name: 'slug',
       type: 'text',
       required: true,
-      unique: true,
+      unique: true
     },
     {
       name: 'description',
-      type: 'textarea',
-    },
-  ],
-};
+      type: 'textarea'
+    }
+  ]
+}
 
-export default Categories;
+export default Categories

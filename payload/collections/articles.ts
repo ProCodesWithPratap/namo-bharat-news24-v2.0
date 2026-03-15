@@ -1,87 +1,58 @@
-import { CollectionConfig } from 'payload/types';
-import richText from '@payloadcms/richtext-lexical';
+import type { CollectionConfig } from 'payload'
 
-/**
- * Articles are the primary content type for the site.  Each article
- * belongs to one category, can have multiple authors and includes
- * rich‑text content, an optional hero image and metadata for SEO.
- */
 const Articles: CollectionConfig = {
   slug: 'articles',
   access: {
-    read: () => true,
+    read: () => true
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'publishedAt'],
+    defaultColumns: ['title', 'category', 'publishedAt']
   },
   fields: [
     {
       name: 'title',
       type: 'text',
-      required: true,
+      required: true
     },
     {
       name: 'slug',
       type: 'text',
       required: true,
-      unique: true,
+      unique: true
     },
     {
       name: 'excerpt',
-      type: 'textarea',
-      admin: {
-        description: 'A short summary used on article listings and meta description.',
-      },
+      type: 'textarea'
     },
     {
       name: 'heroImage',
       type: 'upload',
-      relationTo: 'media',
-      required: false,
+      relationTo: 'media'
     },
     {
       name: 'category',
       type: 'relationship',
       relationTo: 'categories',
-      hasMany: false,
-      required: true,
+      required: true
     },
     {
       name: 'authors',
       type: 'relationship',
       relationTo: 'authors',
-      hasMany: true,
+      hasMany: true
     },
     {
       name: 'content',
       type: 'richText',
-      required: true,
-      editor: richText({
-        admin: {
-          elements: ['h2', 'h3', 'h4', 'p', 'blockquote', 'ul', 'ol', 'link', 'upload'],
-        },
-      }),
+      required: true
     },
     {
       name: 'publishedAt',
       type: 'date',
-      defaultValue: () => new Date(),
-      admin: {
-        description: 'Articles scheduled in the future will not be visible until this date.',
-      },
-    },
-    {
-      name: 'tags',
-      type: 'array',
-      fields: [
-        {
-          name: 'tag',
-          type: 'text',
-        },
-      ],
-    },
-  ],
-};
+      defaultValue: () => new Date().toISOString()
+    }
+  ]
+}
 
-export default Articles;
+export default Articles

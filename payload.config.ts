@@ -1,85 +1,62 @@
-import { buildConfig } from 'payload/config';
-import path from 'path';
+import { buildConfig } from 'payload'
+import { postgresAdapter } from '@payloadcms/db-postgres'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { seoPlugin } from '@payloadcms/plugin-seo'
+import articles from './payload/collections/articles.ts'
+import authors from './payload/collections/authors.ts'
+import categories from './payload/collections/categories.ts'
+import media from './payload/collections/media.ts'
+import breakingNews from './payload/collections/breakingNews.ts'
 
-// Import collection definitions.  Each collection resides in the
-// `payload/collections` directory.  Separating collections into
-// individual files keeps this configuration concise and easy to
-// maintain.
-import categories from './payload/collections/categories';
-import authors from './payload/collections/authors';
-import media from './payload/collections/media';
-import articles from './payload/collections/articles';
-import breakingNews from './payload/collections/breakingNews';
+const serverURL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
+const users = {
+  slug: 'users',
+  auth: true,
+  admin: {
+    useAsTitle: 'email',
+    defaultColumns: ['email', 'role']
+  },
+  access: {
+    read: ({ req }: { req: { user?: unknown } }) => Boolean(req.user)
+  },
+  fields: [
+    {
+      name: 'name',
+      type: 'text',
+      required: true
+    },
+    {
+      name: 'role',
+      type: 'select',
+      required: true,
+      defaultValue: 'editor',
+      options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'Editor', value: 'editor' },
+        { label: 'Author', value: 'author' }
+      ]
+    }
+  ]
+}
 
 export default buildConfig({
-  // The serverURL is used to generate fully‑qualified URLs for media
-  // uploads and to construct canonical links in the SEO plugin.  It
-  // should match the publicly accessible URL of your site.
-  serverURL: process.env.NEXT_PUBLIC_SITE_URL,
-
+  secret: process.env.PAYLOAD_SECRET || 'local-dev-secret',
+  serverURL,
+  editor: lexicalEditor(),
+  db: postgresAdapter({
+    pool: {
+      connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@127.0.0.1:5432/namo_bharat_news24'
+    }
+  }),
   admin: {
-    user: 'users',
-    // You can customize the appearance of the Payload admin panel here.
-    // See https://payloadcms.com/docs/admin/overview for details.
+    user: users.slug
   },
-
-  // Define the built‑in authentication collection.  When `auth: true`
-  // is set, Payload automatically creates login, registration and
-  // password reset endpoints.  The `users` collection is used for
-  // administrators and content editors.
-  collections: [
-    {
-      slug: 'users',
-      auth: true,
-      admin: {
-        defaultColumns: ['email', 'roles'],
-      },
-      access: {
-        read: () => true,
-      },
-      fields: [
-        {
-          name: 'roles',
-          type: 'array',
-          required: true,
-          admin: {
-            components: {
-              // Render roles as a multi‑select in the admin UI
-              Field: (props) => {
-                return (
-                  <select {...props} multiple>
-                    <option value="admin">Admin</option>
-                    <option value="editor">Editor</option>
-                    <option value="author">Author</option>
-                    <option value="seo">SEO</option>
-                  </select>
-                );
-              },
-            },
-          },
-        },
-      ],
-    },
-    media,
-    categories,
-    authors,
-    articles,
-    breakingNews,
-  ],
-
-  // Plugins can extend Payload with additional functionality.  The
-  // SEO plugin automatically adds fields for title, description,
-  // canonical URLs and open graph images to each collection.  See
-  // https://payloadcms.com/docs/plugins/seo for configuration details.
+  collections: [users as any, media, categories, authors, articles, breakingNews],
   plugins: [
-    require('@payloadcms/plugin-seo').default({
-      collections: ['articles', 'categories', 'authors', 'breakingNews'],
-    }),
-  ],
-
-  // Define TypeScript aliases so that imports like `@/payload/...` work
-  // correctly when compiling the admin panel.
-  typescript: {
-    tsconfig: path.resolve(__dirname, 'tsconfig.json'),
-  },
-});
+    seoPlugin({
+      collections: ['articles', 'categories', 'authors'],
+      uploadsCollection: 'media'
+    })
+  ]
+})

@@ -6,7 +6,9 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "payload": "payload",
+    "payload:types": "payload generate:types"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "latest",
