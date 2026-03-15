@@ -38,10 +38,17 @@ Before using `/admin/login` in production, run a one-time bootstrap against the 
 DATABASE_URL=<railway-postgres-url> PAYLOAD_SECRET=<same-secret> npm run db:bootstrap
 ```
 
-What this does:
-- enables one-time `push` (`PAYLOAD_SCHEMA_PUSH_ON_INIT=true`) to create/update Payload tables
-- verifies auth tables exist (`users`, `users_sessions`)
-- exits with failure if auth schema is still incomplete
+Optional explicit diagnosis command:
+
+```bash
+DATABASE_URL=<railway-postgres-url> npm run db:diagnose:auth
+```
+
+What bootstrap does:
+- safely exits without DB work when `DATABASE_URL` is missing (preview/mock-safe)
+- initializes Payload with one-time schema push (`PAYLOAD_SCHEMA_PUSH_ON_INIT=true`)
+- verifies auth tables (`users`, `users_sessions`) and essential auth columns
+- fails fast with machine-readable details (`missing_tables` vs `missing_columns`)
 
 > Do **not** rely on first runtime `/admin/login` requests to create DB tables.
 
@@ -71,8 +78,15 @@ From the runtime evidence (DB connection succeeds, failure occurs when querying 
 Most likely root cause:
 - missing `users` table and/or missing `users_sessions` table
 
-Less likely but possible:
-- missing columns from one or both auth tables due to partial/incomplete schema init
-- mismatched auth schema version between code and DB
+Also possible:
+- tables exist but are missing required auth/session columns (partial schema init)
 
-Use bootstrap verification to catch this deterministically before serving production traffic.
+Operationally this is an auth schema mismatch between code and the current DB state.
+
+Run diagnosis to determine the exact failure mode:
+```bash
+DATABASE_URL=<railway-postgres-url> npm run db:diagnose:auth
+```
+- `status=missing_tables` → missing `users` and/or `users_sessions`
+- `status=missing_columns` → auth table exists but required columns are missing
+- `status=ok` → schema is not the current blocker

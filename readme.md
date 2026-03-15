@@ -51,7 +51,11 @@ After setting `DATABASE_URL` and `PAYLOAD_SECRET`:
 6. Log in and start creating categories, authors, and articles.
 
 ### Why this is required
-If DB connection works but `/admin/login` fails while querying `users` and `users_sessions`, the auth schema was not initialized yet. The bootstrap step initializes/verifies these tables up front instead of waiting for runtime failures.
+If DB connection works but `/admin/login` fails while querying `users` and `users_sessions`, the auth schema was not initialized yet. The bootstrap step initializes/verifies auth schema up front instead of waiting for runtime failures.
+
+To inspect exact failure mode before/after bootstrap:
+- `DATABASE_URL=<postgres-url> npm run db:diagnose:auth`
+- returns `missing_tables`, `missing_columns`, or `ok`
 
 ## What still needs your credentials
 You still need to provide these real values in your environment:
@@ -68,6 +72,7 @@ Without those credentials, the app remains in safe mock mode and `/admin` will s
 - Add analytics keys and alerting
 
 ## Migration/bootstrap commands
-- `npm run db:bootstrap` → one-time schema init + auth table verification (`users`, `users_sessions`)
+- `npm run db:bootstrap` → one-time schema init + auth schema verification (Vercel-safe, skips when DB missing)
+- `npm run db:diagnose:auth` → explicit auth schema diagnosis (`missing_tables` / `missing_columns` / `ok`)
 - `npm run payload:migrate` → run committed migrations (for migration-first workflow)
 - `npm run payload:migrate:status` → inspect migration status
