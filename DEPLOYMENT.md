@@ -31,12 +31,26 @@ In Vercel **Production** env vars set:
 - `NEXT_PUBLIC_SITE_URL=https://<production-domain>`
 - `NEWS_DATA_MODE=auto` (recommended)
 
-### C. Deploy
-- Trigger a production deploy.
+### C. Initialize database schema once (required)
+Before using `/admin/login` in production, run a one-time bootstrap against the production database:
+
+```bash
+DATABASE_URL=<railway-postgres-url> PAYLOAD_SECRET=<same-secret> npm run db:bootstrap
+```
+
+What this does:
+- enables one-time `push` (`PAYLOAD_SCHEMA_PUSH_ON_INIT=true`) to create/update Payload tables
+- verifies auth tables exist (`users`, `users_sessions`)
+- exits with failure if auth schema is still incomplete
+
+> Do **not** rely on first runtime `/admin/login` requests to create DB tables.
+
+### D. Deploy
+- Trigger a production deploy **after** the schema bootstrap step succeeds.
 - Visit `/admin`.
 - Create first admin user if prompted.
 
-### D. Verify real data mode
+### E. Verify real data mode
 - Add at least one category, author, and article in admin.
 - Confirm homepage/article/category/author/search pages render your CMS content.
 
@@ -49,3 +63,16 @@ In Vercel **Production** env vars set:
 - If `DATABASE_URL` is missing, app content uses mock data.
 - Preview builds remain deploy-safe with no database.
 - Admin route remains available but shows a setup message until DB credentials are configured.
+
+
+## 5) Auth schema failure diagnosis
+From the runtime evidence (DB connection succeeds, failure occurs when querying `users` + `users_sessions`), the failure is an **uninitialized auth schema** issue.
+
+Most likely root cause:
+- missing `users` table and/or missing `users_sessions` table
+
+Less likely but possible:
+- missing columns from one or both auth tables due to partial/incomplete schema init
+- mismatched auth schema version between code and DB
+
+Use bootstrap verification to catch this deterministically before serving production traffic.
