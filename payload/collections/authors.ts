@@ -1,56 +1,36 @@
-import { CollectionConfig } from 'payload/types';
+import type { CollectionConfig } from 'payload'
 
-/**
- * Authors represent journalists, editors and other contributors.  Each
- * author has a name, slug, optional photo and bio.  Articles can
- * reference one or more authors via a relationship field.
- */
 const Authors: CollectionConfig = {
   slug: 'authors',
   access: {
-    read: () => true,
+    read: () => true
   },
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'slug'],
+    defaultColumns: ['name', 'slug']
   },
   fields: [
     {
       name: 'name',
       type: 'text',
-      required: true,
+      required: true
     },
     {
       name: 'slug',
       type: 'text',
       required: true,
-      unique: true,
+      unique: true
     },
     {
       name: 'photo',
       type: 'upload',
-      relationTo: 'media',
+      relationTo: 'media'
     },
     {
       name: 'bio',
-      type: 'textarea',
-    },
-    {
-      name: 'facebook',
-      type: 'text',
-      label: 'Facebook URL',
-    },
-    {
-      name: 'twitter',
-      type: 'text',
-      label: 'Twitter URL',
-    },
-    {
-      name: 'instagram',
-      type: 'text',
-      label: 'Instagram URL',
-    },
-  ],
-};
+      type: 'textarea'
+    }
+  ]
+}
 
-export default Authors;
+export default Authors

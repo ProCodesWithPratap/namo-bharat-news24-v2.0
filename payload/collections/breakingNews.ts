@@ -1,11 +1,5 @@
-import { CollectionConfig } from 'payload/types';
+import type { CollectionConfig } from 'payload'
 
-/**
- * Breaking news items are displayed prominently on the site for a
- * limited time.  Each item has a title and an optional link to an
- * article.  The `start` and `end` fields control the visibility
- * window; outside of this window, the item will not appear.
- */
 const BreakingNews: CollectionConfig = {
   slug: 'breakingNews',
   labels: {
@@ -13,39 +7,32 @@ const BreakingNews: CollectionConfig = {
     plural: 'Breaking News'
   },
   access: {
-    read: () => true,
+    read: () => true
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'start', 'end'],
+    defaultColumns: ['title', 'start', 'end']
   },
   fields: [
     {
       name: 'title',
       type: 'text',
-      required: true,
+      required: true
     },
     {
       name: 'article',
       type: 'relationship',
-      relationTo: 'articles',
-      required: false,
+      relationTo: 'articles'
     },
     {
       name: 'start',
-      type: 'date',
-      admin: {
-        description: 'When this item should begin appearing.',
-      },
+      type: 'date'
     },
     {
       name: 'end',
-      type: 'date',
-      admin: {
-        description: 'When this item should stop appearing.',
-      },
-    },
-  ],
-};
+      type: 'date'
+    }
+  ]
+}
 
-export default BreakingNews;
+export default BreakingNews
