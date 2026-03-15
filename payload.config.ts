@@ -46,7 +46,7 @@ export default buildConfig({
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@127.0.0.1:5432/namo_bharat_news24'
+      connectionString: process.env.DATABASE_URL || ''
     }
   }),
   admin: {
